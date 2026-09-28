@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 1. Menú Hamburguesa
+  // 1. Menú Hamburguesa para celulares
   const btnMenu = document.getElementById('btnMenu');
   const navMenu = document.getElementById('navMenu');
 
@@ -8,68 +8,85 @@ document.addEventListener('DOMContentLoaded', () => {
     navMenu.classList.toggle('active');
   });
 
-  // Cerrar menú al hacer clic en un enlace
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => navMenu.classList.remove('active'));
+  // Cerrar menú al presionar una opción
+  document.querySelectorAll('.nav a').forEach(enlace => {
+    enlace.addEventListener('click', () => {
+      navMenu.classList.remove('active');
+    });
   });
 
-  // 2. Animar barras de progreso al hacer scroll
-  const progresses = document.querySelectorAll('.progress');
-  window.addEventListener('scroll', () => {
-    const skillsSection = document.getElementById('skills');
-    const position = skillsSection.getBoundingClientRect().top;
+  // 2. Animación de barras de progreso al hacer scroll
+  const barras = document.querySelectorAll('.barra-progreso');
 
-    if (position < window.innerHeight - 50) {
-      progresses.forEach(bar => {
-        bar.style.width = bar.getAttribute('data-width');
+  window.addEventListener('scroll', () => {
+    const seccion = document.getElementById('habilidades');
+    const posicion = seccion.getBoundingClientRect().top;
+
+    if (posicion < window.innerHeight - 80) {
+      barras.forEach(barra => {
+        const porcentaje = barra.getAttribute('data-porcentaje');
+        barra.style.width = porcentaje;
       });
     }
   });
 
   // 3. Validación de Formulario en tiempo real
-  const form = document.getElementById('contactForm');
-  const nameInput = document.getElementById('name');
-  const emailInput = document.getElementById('email');
-  const messageInput = document.getElementById('message');
-  const msgSuccess = document.getElementById('msgSuccess');
+  const form = document.getElementById('formularioContacto');
+  const inputNombre = document.getElementById('nombre');
+  const inputEmail = document.getElementById('email');
+  const inputMensaje = document.getElementById('mensaje');
 
-  const setError = (input, message) => {
-    input.nextElementSibling.textContent = message;
-  };
+  const errorNombre = document.getElementById('errorNombre');
+  const errorEmail = document.getElementById('errorEmail');
+  const errorMensaje = document.getElementById('errorMensaje');
+  const mensajeExito = document.getElementById('mensajeExito');
 
-  const validate = () => {
-    let valid = true;
+  function validar() {
+    let correcto = true;
 
-    if (!nameInput.value.trim()) {
-      setError(nameInput, 'Ingresa tu nombre.');
-      valid = false;
-    } else { setError(nameInput, ''); }
+    // Validación Nombre
+    if (inputNombre.value.trim() === '') {
+      errorNombre.textContent = 'Por favor escribe tu nombre ♡';
+      correcto = false;
+    } else {
+      errorNombre.textContent = '';
+    }
 
-    if (!emailInput.value.includes('@')) {
-      setError(emailInput, 'Ingresa un correo válido.');
-      valid = false;
-    } else { setError(emailInput, ''); }
+    // Validación Email
+    if (!inputEmail.value.includes('@') || !inputEmail.value.includes('.')) {
+      errorEmail.textContent = 'Ingresa un correo válido (ej: nombre@correo.com)';
+      correcto = false;
+    } else {
+      errorEmail.textContent = '';
+    }
 
-    if (messageInput.value.trim().length < 5) {
-      setError(messageInput, 'El mensaje debe ser más largo.');
-      valid = false;
-    } else { setError(messageInput, ''); }
+    // Validación Mensaje
+    if (inputMensaje.value.trim().length < 5) {
+      errorMensaje.textContent = 'Escribe un mensaje de al menos 5 caracteres';
+      correcto = false;
+    } else {
+      errorMensaje.textContent = '';
+    }
 
-    return valid;
-  };
+    return correcto;
+  }
 
-  // Validar mientras el usuario escribe
-  form.querySelectorAll('input, textarea').forEach(input => {
-    input.addEventListener('input', validate);
-  });
+  // Comprobar mientras la persona escribe
+  inputNombre.addEventListener('input', validar);
+  inputEmail.addEventListener('input', validar);
+  inputMensaje.addEventListener('input', validar);
 
-  // Evento Submit
+  // Al presionar enviar
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (validate()) {
-      msgSuccess.textContent = '¡Mensaje enviado con éxito!';
+
+    if (validar()) {
+      mensajeExito.textContent = '¡Mensaje enviado con éxito! Nos vemos pronto ✨';
       form.reset();
-      setTimeout(() => msgSuccess.textContent = '', 4000);
+
+      setTimeout(() => {
+        mensajeExito.textContent = '';
+      }, 4000);
     }
   });
 
